@@ -2,14 +2,19 @@ import sbt._
 import Keys._
 
 object ScalaBatchBuild extends Build {
-  
+
+  val test = "org.scalatest" %% "scalatest" % "2.2.6"
+  val restLib = "org.scalaj" %% "scalaj-http" % "2.3.0"
+
+  val commonDependencies: Seq[ModuleID] = Seq(test)
+  val restDependencies: Seq[ModuleID] = Seq(restLib)
+
   lazy val root = project.in(file(".")).aggregate(core, rest)
 
-  lazy val core = project
+  lazy val core = project.settings(libraryDependencies ++= commonDependencies)
 
-  lazy val rest = project.settings(
-    libraryDependencies +=  "org.scalaj" %% "scalaj-http" % "2.3.0"
-  ).dependsOn(core)
+  lazy val rest = project.settings(libraryDependencies ++= commonDependencies).
+    settings(libraryDependencies ++= restDependencies).dependsOn(core)
   
   lazy val sample = project.dependsOn(core, rest)
 }
