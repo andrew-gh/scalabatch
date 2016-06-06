@@ -9,21 +9,31 @@ class JobBuilder(identifier:String) {
 
   val jobContext = new JobContext()
 
+  val executionManager = new JobExecutionManager()
+
   val tasks = scala.collection.mutable.LinkedHashMap[String, mutable.MutableList[Task]]()
 
   def instance(identifier:String) = new JobBuilder(identifier)
+
+  def addJobStartListener(listener: String => Unit): JobBuilder ={
+    executionManager.addJobStartListener(listener)
+    this
+  }
+
+  def addJobEndListener(listener: String => Unit): JobBuilder ={
+    executionManager.addJobEndListener(listener)
+    this
+  }
 
   def addStep(identifier:String):JobBuilder = {
     tasks(identifier)=new mutable.MutableList[Task]()
     this
   }
-//classOf[C].getConstructor(classOf[String]).newInstance("string")
+
   def addTask(identifier:String, typeName:String, path:String,
               args:Array[AnyRef] = Array.emptyObjectArray):JobBuilder = {
     if (tasks.isEmpty) return this
     val key = tasks.takeRight(1).iterator.next()._1
-    val urls = urlses(getClass.getClassLoader)
-//    println(urls.filterNot(_.toString.contains("ivy")).mkString("\n"))
     val t = typeName match {
       case "FlatFileReadTask" => new FlatFileReadTask(path, identifier, jobContext, key)
       case "FlatFileWriteTask" => new FlatFileWriteTask(path, identifier, Seq.empty, jobContext, key)
@@ -38,12 +48,6 @@ class JobBuilder(identifier:String) {
     this
   }
 
-  def urlses(cl: ClassLoader): Array[java.net.URL] = cl match {
-    case null => Array()
-    case u: java.net.URLClassLoader => u.getURLs() ++ urlses(cl.getParent)
-    case _ => urlses(cl.getParent)
-  }
-
   def build():Job = {
     tasks.foreach(s=>{
       jobContext.context(s._1) = collection.mutable.Map[String, List[_]]() ++=
@@ -52,7 +56,7 @@ class JobBuilder(identifier:String) {
     })
     val content = tasks.foldLeft(List.empty[Step])((acc, elem)=>
       acc.::(new SimpleStep(elem._1, elem._2, jobContext)))
-    new SimpleJob("", content)
+    new SimpleJob("", content, executionManager)
   }
 
 }
