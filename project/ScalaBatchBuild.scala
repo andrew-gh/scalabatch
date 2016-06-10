@@ -9,7 +9,9 @@ object ScalaBatchBuild extends Build {
   val commonDependencies: Seq[ModuleID] = Seq(test)
   val restDependencies: Seq[ModuleID] = Seq(restLib)
 
-  lazy val root = project.in(file(".")).aggregate(core, rest)
+  lazy val root = project.settings(
+    scalaVersion  := "2.10.6"
+  ).in(file(".")).aggregate(core, rest)
 
   lazy val core = project.settings(libraryDependencies ++= commonDependencies)
 

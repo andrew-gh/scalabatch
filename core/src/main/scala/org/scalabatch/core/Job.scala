@@ -16,4 +16,6 @@ trait Job {
 
   def executionManager:JobExecutionManager
 
+  def context:JobContext
+
 }

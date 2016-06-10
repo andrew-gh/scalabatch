@@ -53,10 +53,19 @@ class JobBuilder(identifier:String) {
       jobContext.context(s._1) = collection.mutable.Map[String, List[_]]() ++=
         s._2.foldLeft(Map.empty[String, List[_]])((acc, elem)=>
           acc.updated(elem.identifier, List.empty))
+      jobContext.readCount(s._1) = collection.mutable.Map[String, Long]() ++=
+        s._2.foldLeft(Map.empty[String, Long])((acc, elem)=>
+          acc.updated(elem.identifier, 0))
+      jobContext.writeCount(s._1) = collection.mutable.Map[String, Long]() ++=
+        s._2.foldLeft(Map.empty[String, Long])((acc, elem)=>
+          acc.updated(elem.identifier, 0))
+      jobContext.processCount(s._1) = collection.mutable.Map[String, Long]() ++=
+        s._2.foldLeft(Map.empty[String, Long])((acc, elem)=>
+          acc.updated(elem.identifier, 0))
     })
     val content = tasks.foldLeft(List.empty[Step])((acc, elem)=>
       acc.::(new SimpleStep(elem._1, elem._2, jobContext)))
-    new SimpleJob("", content, executionManager)
+    new SimpleJob("", content, executionManager, jobContext)
   }
 
 }
