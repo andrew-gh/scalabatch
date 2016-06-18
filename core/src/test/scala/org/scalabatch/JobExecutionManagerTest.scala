@@ -29,8 +29,8 @@ class JobExecutionManagerTest extends FunSuite {
       addTask("1","FlatFileReadTask", input).
       addTask("2","FlatFileWriteTask", output).build()
     job.executeJob()
-    assert(job.context.readCount.get("1").get.get("1").get==2)
-    assert(job.context.writeCount.get("1").get.get("2").get==2)
+    assert(job.context.stat.get("1").get.get("1").get.readCount==2)
+    assert(job.context.stat.get("1").get.get("2").get.writeCount==2)
     new File(output).delete()
   }
 }

@@ -3,8 +3,8 @@ package org.scalabatch.core
 trait ReadTask[A] extends Task{
 
   def setReadCount(count:Long) ={
-    val r = context.readCount.get(parentStep).get
-    r(identifier)=count
+    val r = context.stat.get(parentStep).get
+    r(identifier).readCount=count
   }
 
   def read(): List[A]

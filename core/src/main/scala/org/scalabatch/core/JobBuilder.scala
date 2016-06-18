@@ -1,6 +1,7 @@
 package org.scalabatch.core
 
 import org.scalabatch.reader.{DirectoryReadTask, FlatFileReadTask}
+import org.scalabatch.stat.Stat
 import org.scalabatch.writer.FlatFileWriteTask
 
 import scala.collection.mutable
@@ -62,6 +63,9 @@ class JobBuilder(identifier:String) {
       jobContext.processCount(s._1) = collection.mutable.Map[String, Long]() ++=
         s._2.foldLeft(Map.empty[String, Long])((acc, elem)=>
           acc.updated(elem.identifier, 0))
+      jobContext.stat(s._1) = collection.mutable.Map[String, Stat]() ++=
+        s._2.foldLeft(Map.empty[String, Stat])((acc, elem)=>
+          acc.updated(elem.identifier, new Stat()))
     })
     val content = tasks.foldLeft(List.empty[Step])((acc, elem)=>
       acc.::(new SimpleStep(elem._1, elem._2, jobContext)))

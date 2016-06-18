@@ -3,8 +3,8 @@ package org.scalabatch.core
 trait WriteTask extends Task {
 
   def setWriteCount(count:Long) ={
-    val r = context.writeCount.get(parentStep).get
-    r(identifier)=count
+    val r = context.stat.get(parentStep).get
+    r(identifier).writeCount=count
   }
 
   def write(records:List[_]):Unit
