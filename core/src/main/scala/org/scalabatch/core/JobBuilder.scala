@@ -1,5 +1,7 @@
 package org.scalabatch.core
 
+import java.util.UUID
+
 import org.scalabatch.reader.{DirectoryReadTask, FlatFileReadTask}
 import org.scalabatch.stat.Stat
 import org.scalabatch.writer.FlatFileWriteTask
@@ -16,6 +18,8 @@ class JobBuilder(identifier:String) {
 
   def instance(identifier:String) = new JobBuilder(identifier)
 
+  var taskCounter=1;
+
   def addJobStartListener(listener: String => Unit): JobBuilder ={
     executionManager.addJobStartListener(listener)
     this
@@ -31,21 +35,30 @@ class JobBuilder(identifier:String) {
     this
   }
 
-  def addTask(identifier:String, typeName:String, path:String,
-              args:Array[AnyRef] = Array.emptyObjectArray):JobBuilder = {
+  def addTask(params:String):JobBuilder = {
+    val parsed = params.split(":")
+    parsed match {
+      case Array(_) => addTask(parsed.head, Array.empty[String])
+      case _ => addTask(parsed.head, parsed.tail)
+    }
+  }
+
+  def addTask(typeName:String,
+              args:Array[String] = Array.empty[String]):JobBuilder = {
     if (tasks.isEmpty) return this
     val key = tasks.takeRight(1).iterator.next()._1
     val t = typeName match {
-      case "FlatFileReadTask" => new FlatFileReadTask(path, identifier, jobContext, key)
-      case "FlatFileWriteTask" => new FlatFileWriteTask(path, identifier, Seq.empty, jobContext, key)
-      case "DirectoryReadTask" => new DirectoryReadTask(path, identifier, jobContext, key)
+      case "FlatFileReadTask" => new FlatFileReadTask(args(0).toString, taskCounter.toString, jobContext, key)
+      case "FlatFileWriteTask" => new FlatFileWriteTask(args(0).toString, taskCounter.toString, Seq.empty, jobContext, key)
+      case "DirectoryReadTask" => new DirectoryReadTask(args(0).toString, taskCounter.toString, jobContext, key)
       case "rest" => {
         val clazz = Class.forName("org.scalabatch.reader.RestReadTask")
         val constructor = clazz.getConstructors()(0)
-        constructor.newInstance(path, identifier, jobContext, key).asInstanceOf[Task]
+        constructor.newInstance(args(0).toString, identifier, jobContext, key).asInstanceOf[Task]
       }
     }
     tasks(key)=tasks(key):+t
+    taskCounter+=1
     this
   }
 

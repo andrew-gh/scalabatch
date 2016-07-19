@@ -7,7 +7,14 @@ package org.scalabatch.core
 
 trait Task {
 
-  def execute()
+  def execute() = {
+    val s = stat()
+    s(identifier).startTime=System.currentTimeMillis()
+    executeTask()
+    s(identifier).endTime=System.currentTimeMillis()
+  }
+
+  def executeTask()
 
   def identifier:String
 
@@ -15,6 +22,10 @@ trait Task {
 
   def stepContext() ={
     context.context.get(parentStep).get
+  }
+
+  def stat() ={
+    context.stat.get(parentStep).get
   }
 
   def parentStep:String
