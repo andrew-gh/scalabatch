@@ -41,8 +41,9 @@ class JobExecutionManagerTest extends FunSuite {
       addTask("FlatFileReadTask", Array(input)).
       addTask("FlatFileWriteTask", Array(output)).build()
     job.executeJob()
-    val stat = job.context.stat.get("1").get.get("1").get
-    assert(stat.endTime-stat.startTime>0)
+    val statRead = job.context.stat.get("1").get.get("1").get
+    val statWrite = job.context.stat.get("1").get.get("2").get
+    assert(statWrite.endTime - statRead.startTime>0)
     new File(output).delete()
   }
 

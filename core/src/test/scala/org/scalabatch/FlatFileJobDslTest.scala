@@ -11,7 +11,7 @@ import scala.io.Source
 
 class FlatFileJobDslTest extends FunSuite {
 
-  test("FlatFileJobTest"){
+  test("FlatFileJobDslTest"){
     val input = getClass.getResource("/input1.txt").getPath
     val output = input.replace("input1.txt", "output1.txt")
 
