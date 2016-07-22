@@ -9,9 +9,9 @@ import scala.io.Source
 
 class FlatFileJobTest extends FunSuite {
 
-    test("FlatFileJobTest"){
+    test(s"${getClass.getSimpleName}:simple"){
       val input = getClass.getResource("/input1.txt").getPath
-      val output = input.replace("input1.txt", "output1.txt")
+      val output = input.replace("input1.txt", "output_simple.txt")
       new JobBuilder("1").addStep("1").addTask("FlatFileReadTask", Array(input)).
         addTask("FlatFileWriteTask", Array(output)).build().executeJob()
       assert(new File(output).exists(), "Output file cannot be read")
@@ -20,10 +20,10 @@ class FlatFileJobTest extends FunSuite {
       new File(output).delete()
     }
 
-    test("FlatFileMultiStepJobTest"){
+    test(s"${getClass.getSimpleName}:multistep"){
       val input = getClass.getResource("/input1.txt").getPath
-      val output = input.replace("input1.txt", "output1.txt")
-      val output2 = input.replace("input1.txt", "output2.txt")
+      val output = input.replace("input1.txt", "output_multistep.txt")
+      val output2 = input.replace("input1.txt", "output_multistep2.txt")
       new JobBuilder("1").addStep("1").addTask("FlatFileReadTask", Array(input)).
         addTask("FlatFileWriteTask", Array(output)).
         addStep("2").addTask("FlatFileReadTask", Array(input)).

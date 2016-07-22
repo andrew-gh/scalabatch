@@ -36,7 +36,7 @@ class JobBuilder(identifier:String) {
   }
 
   def addTask(params:String):JobBuilder = {
-    val parsed = params.split(":")
+    val parsed = params.split(";")
     parsed match {
       case Array(_) => addTask(parsed.head, Array.empty[String])
       case _ => addTask(parsed.head, parsed.tail)

@@ -8,18 +8,15 @@ object JobDslBuilderWrapper {
 
     val builder = new JobBuilder(s)
 
+    var tasks=List.empty[String]
+
     //new JobBuilder("1").addStep("1").addTask("1","FlatFileReadTask", input).
     //addTask("2","FlatFileWriteTask", output).build().executeJob()
 
     def tasks(t:TaskDslDefinition):JobDslBuilder = {
       println(s"tasks $t")
-      t.tasks.foreach(s => builder.addStep(s))
-      this
-    }
-
-    def step(j:JobDslBuilder):JobDslBuilder = {
-      println(s"step $j")
       builder.addStep("")
+      t.tasks.foreach(t => builder.addTask(t))
       this
     }
 

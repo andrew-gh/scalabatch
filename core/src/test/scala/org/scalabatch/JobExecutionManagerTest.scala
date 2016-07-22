@@ -9,7 +9,7 @@ class JobExecutionManagerTest extends FunSuite {
 
   var marker: List[String] = Nil
 
-  test("JobListenerTest") {
+  test(s"${getClass.getSimpleName}:jobListener") {
     new JobBuilder("1").addStep("1").
       addJobStartListener(s=>{
         marker::="s"
@@ -22,7 +22,7 @@ class JobExecutionManagerTest extends FunSuite {
     assert(marker.contains("f"))
   }
 
-  test("JobContextCountTest") {
+  test(s"${getClass.getSimpleName}:readWriteCount") {
     val input = getClass.getResource("/input1.txt").getPath
     val output = input.replace("input1.txt", "output1.txt")
     val job = new JobBuilder("1").addStep("1").
@@ -34,15 +34,16 @@ class JobExecutionManagerTest extends FunSuite {
     new File(output).delete()
   }
 
-  test("JobContextTimeTest") {
+  test(s"${getClass.getSimpleName}:time") {
     val input = getClass.getResource("/input1.txt").getPath
-    val output = input.replace("input1.txt", "output1.txt")
+    val output = input.replace("input1.txt", "output_time.txt")
     val job = new JobBuilder("1").addStep("1").
       addTask("FlatFileReadTask", Array(input)).
       addTask("FlatFileWriteTask", Array(output)).build()
     job.executeJob()
     val statRead = job.context.stat.get("1").get.get("1").get
     val statWrite = job.context.stat.get("1").get.get("2").get
+    println(s"start=${statRead.startTime}, end=${statWrite.endTime}")
     assert(statWrite.endTime - statRead.startTime>0)
     new File(output).delete()
   }
