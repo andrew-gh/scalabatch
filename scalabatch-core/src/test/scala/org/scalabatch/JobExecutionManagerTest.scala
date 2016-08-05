@@ -35,7 +35,7 @@ class JobExecutionManagerTest extends FunSuite {
   }
 
   test(s"${getClass.getSimpleName}:time") {
-    val input = getClass.getResource("/input1.txt").getPath
+    val input = getClass.getResource("/input_large.txt").getPath
     val output = input.replace("input1.txt", "output_time.txt")
     val job = new JobBuilder("1").addStep("1").
       addTask("FlatFileReadTask", Array(input)).
