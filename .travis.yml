@@ -1,7 +1,7 @@
 language: scala
 scala:
 - 2.10.4
-script: sbt clean test
+script: sbt clean publish
 jdk:
 - oraclejdk8
 notifications:
