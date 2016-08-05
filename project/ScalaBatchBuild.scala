@@ -12,26 +12,27 @@ object ScalaBatchBuild extends Build {
   lazy val baseSettings = Seq(
     organization := "org.scalabatch",
     version := "0.1-SNAPSHOT",
-    publishMavenStyle := true
+    publishMavenStyle := true,
+    publishTo := {
+      val nexus = "https://oss.sonatype.org/"
+      if (isSnapshot.value)
+        Some("snapshots" at nexus + "content/repositories/snapshots")
+      else
+        Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+    },
+    pomExtra := (
+      <url>https://github.com/andrew-gh/scalabatch</url>
+      )
   )
-
-//  lazy val root = project.settings(
-//    scalaVersion  := "2.10.6",
-//    publishArtifact in (Compile, packageBin) := false,
-//    publishArtifact in (Compile, packageDoc) := false,
-//    publishArtifact in (Compile, packageSrc) := false
-//  ).in(file(".")).aggregate(core, rest)
 
   lazy val root: Project = Project(
     id        = "root",
     base      = file("."),
     aggregate = Seq(core, rest),
     settings  = Defaults.coreDefaultSettings ++ Seq(
-      packagedArtifacts := Map.empty           // prevent publishing anything!
+      packagedArtifacts := Map.empty
     )
   )
-
-//  lazy val core = project.settings(libraryDependencies ++= commonDependencies)
 
   lazy val core = Project(
     id = "core",
@@ -53,9 +54,6 @@ object ScalaBatchBuild extends Build {
     )
   ) dependsOn(core)
 
-//  lazy val rest = project.settings(libraryDependencies ++= commonDependencies).
-//    settings(libraryDependencies ++= restDependencies).dependsOn(core)
-  
   lazy val sample = Project(
     id = "sample",
     base = file("scalabatch-sample"),
