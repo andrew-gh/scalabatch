@@ -44,7 +44,8 @@ class JobExecutionManagerTest extends FunSuite {
     val statRead = job.context.stat.get("1").get.get("1").get
     val statWrite = job.context.stat.get("1").get.get("2").get
     println(s"start=${statRead.startTime}, end=${statWrite.endTime}")
-    assert(statWrite.endTime - statRead.startTime>0)
+    assert(statRead.startTime>0)
+    assert(statWrite.endTime >0)
     new File(output).delete()
   }
 
